@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState, useCallback, useRef } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { toast } from "@/lib/toast";
 import { Button } from "@/components/ui/button";
+import { LocalAdapterAuth, localAdapterKind } from "./LocalAdapterAuth";
 import { Form, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { ImeSafeInput } from "@/components/ui/ime-safe-input";
 import { providerSchema, type ProviderFormData } from "@/lib/schemas/provider";
@@ -1280,6 +1282,36 @@ function ProviderFormFull({
     (appId === "claude" || appId === "codex") && category !== "official";
 
   const handleSubmit = async (values: ProviderFormData) => {
+    const adapterKind =
+      appId === "claude" || appId === "codex"
+        ? localAdapterKind(appId === "claude" ? baseUrl : codexBaseUrl)
+        : undefined;
+    if (adapterKind) {
+      try {
+        const status = await invoke<{ running: boolean }>(
+          "local_adapter_status",
+          { kind: adapterKind },
+        );
+        if (!status.running) {
+          toast.error("请先在认证区域连接适配器，再保存供应商。");
+          return;
+        }
+        if (
+          adapterKind === "commandcode" &&
+          !/^user_[A-Za-z0-9._-]{16,}$/.test(
+            (appId === "claude" ? apiKey : codexApiKey).trim(),
+          )
+        ) {
+          toast.error(
+            "请填写 CommandCode 的 user_ API key，而不是旧版适配器的本地 key。",
+          );
+          return;
+        }
+      } catch (error) {
+        toast.error(String(error));
+        return;
+      }
+    }
     const overridesResult = shouldApplyLocalProxyRequestOverrides
       ? buildLocalProxyRequestOverrides(
           localProxyHeadersOverride,
@@ -2625,6 +2657,22 @@ function ProviderFormFull({
             }
           />
 
+          {(appId === "claude" || appId === "codex") &&
+            localAdapterKind(appId === "claude" ? baseUrl : codexBaseUrl) && (
+              <LocalAdapterAuth
+                key={localAdapterKind(
+                  appId === "claude" ? baseUrl : codexBaseUrl,
+                )}
+                kind={
+                  localAdapterKind(appId === "claude" ? baseUrl : codexBaseUrl)!
+                }
+                onLocalKey={
+                  appId === "claude"
+                    ? handleApiKeyChange
+                    : handleCodexApiKeyChange
+                }
+              />
+            )}
           {appId === "claude" && (
             <ClaudeFormFields
               providerId={providerId}

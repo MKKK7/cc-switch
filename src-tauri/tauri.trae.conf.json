@@ -1,0 +1,9 @@
+{
+  "productName": "CC Switch Trae",
+  "identifier": "com.mkkk7.ccswitch.trae",
+  "bundle": { "createUpdaterArtifacts": false },
+  "plugins": {
+    "updater": { "endpoints": [] },
+    "deep-link": { "desktop": { "schemes": [] } }
+  }
+}

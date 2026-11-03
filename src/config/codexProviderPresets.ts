@@ -134,6 +134,32 @@ function modelCatalog(
 
 export const codexProviderPresets: CodexProviderPreset[] = [
   {
+    name: "Trae 国际版（路由）",
+    websiteUrl: "https://www.trae.ai",
+    category: "third_party",
+    apiFormat: "openai_chat",
+    auth: { OPENAI_API_KEY: "" },
+    config: generateThirdPartyConfig(
+      "Trae",
+      "http://127.0.0.1:18788/v1",
+      "gpt-6.1-sol",
+    ),
+  },
+  {
+    name: "CommandCode CLI / Go（路由）",
+    websiteUrl: "https://commandcode.ai",
+    apiKeyUrl: "https://commandcode.ai/settings/keys",
+    category: "third_party",
+    icon: "commandcode",
+    apiFormat: "openai_chat",
+    auth: { OPENAI_API_KEY: "" },
+    config: generateThirdPartyConfig(
+      "CommandCode",
+      "http://127.0.0.1:18789/v1",
+      "deepseek/deepseek-v4.1-flash",
+    ),
+  },
+  {
     name: "OpenAI Official",
     websiteUrl: "https://chatgpt.com/codex",
     isOfficial: true,

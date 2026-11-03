@@ -2,6 +2,8 @@
 
 mod agy_account;
 mod auth;
+mod local_adapters;
+pub use local_adapters::*;
 mod balance;
 mod claude_account;
 mod codex_oauth;

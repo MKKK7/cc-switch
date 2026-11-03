@@ -36,6 +36,7 @@
     }
   },
   "bundle": {
+    "resources": { "../trae-adapter/": "trae-adapter/", "../commandcode-adapter/": "commandcode-adapter/" },
     "active": true,
     "targets": "all",
     "createUpdaterArtifacts": true,

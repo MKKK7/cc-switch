@@ -1241,6 +1241,7 @@ pub fn run() {
             );
             // 将同一个实例注入到全局状态，避免重复创建导致的不一致
             app.manage(app_state);
+            commands::restore_local_adapters(app.handle().clone());
             app.manage(services::kimi_oauth::KimiOAuthManager::default());
 
             // 初始化 SkillService
@@ -1509,6 +1510,11 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            commands::local_adapter_start,
+            commands::local_adapter_stop,
+            commands::local_adapter_status,
+            commands::local_adapter_settings,
+            commands::local_adapter_prepare,
             commands::get_providers,
             commands::get_current_provider,
             commands::add_provider,

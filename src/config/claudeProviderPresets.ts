@@ -76,6 +76,34 @@ export interface ProviderPreset extends PresetFamilyFields {
 
 export const providerPresets: ProviderPreset[] = [
   {
+    name: "Trae 国际版（路由）",
+    websiteUrl: "https://www.trae.ai",
+    category: "third_party",
+    apiFormat: "openai_chat",
+    settingsConfig: {
+      env: {
+        ANTHROPIC_BASE_URL: "http://127.0.0.1:18788/v1",
+        ANTHROPIC_AUTH_TOKEN: "",
+        ANTHROPIC_MODEL: "gpt-6.1-sol",
+      },
+    },
+  },
+  {
+    name: "CommandCode CLI / Go（路由）",
+    websiteUrl: "https://commandcode.ai",
+    apiKeyUrl: "https://commandcode.ai/settings/keys",
+    category: "third_party",
+    icon: "commandcode",
+    apiFormat: "openai_chat",
+    settingsConfig: {
+      env: {
+        ANTHROPIC_BASE_URL: "http://127.0.0.1:18789/v1",
+        ANTHROPIC_AUTH_TOKEN: "",
+        ANTHROPIC_MODEL: "deepseek/deepseek-v4.1-flash",
+      },
+    },
+  },
+  {
     name: "Claude Official",
     websiteUrl: "https://www.anthropic.com/claude-code",
     settingsConfig: {
