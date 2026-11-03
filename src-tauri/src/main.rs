@@ -1,5 +1,5 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(any(not(debug_assertions), feature = "portable-no-console"), windows_subsystem = "windows")]
 
 fn main() {
     // 在 Linux 上设置 WebKit 环境变量以解决 DMA-BUF 渲染问题

@@ -17,7 +17,7 @@ try {
     }
     npm run build:renderer
     if ($LASTEXITCODE) { throw 'Frontend build failed' }
-    cargo build --manifest-path src-tauri/Cargo.toml --features tauri/custom-protocol --bin cc-switch
+    cargo build --manifest-path src-tauri/Cargo.toml --features 'tauri/custom-protocol,portable-no-console' --bin cc-switch
     if ($LASTEXITCODE) { throw 'Rust build failed' }
     $output = Join-Path $repo 'release\providers-portable'
     New-Item -ItemType Directory -Force $output | Out-Null
