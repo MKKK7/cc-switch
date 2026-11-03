@@ -10,7 +10,12 @@ import { TraeSoloUpstreamClient } from './vendor/solo.ts';
 import { bridgeTraeSoloStream } from './vendor/solo-bridge.ts';
 import { SseDecoder } from './vendor/sse.ts';
 
-export const SUPPORTED_MODELS = ['gpt-6.1-sol', 'kimi-k3'];
+// The Trae directory also contains internal helper and custom-model slots.
+// Keep real models dynamic so newly added upstream models do not need a release.
+export function isTraeChatModel(id) {
+  return typeof id === 'string' && id.length > 0
+    && !/^(?:search_agent(?:_|$)|custom_model_|fast_apply$|input_optimization$|title_generation$|laziness_detection$)/i.test(id);
+}
 
 export async function readProductVersion(location) {
   const info = await stat(location);
@@ -43,10 +48,10 @@ function json(res, status, value) {
   res.end(JSON.stringify(value));
 }
 
-export async function createAdapter({ client, key, port = 18788, supportedModels = SUPPORTED_MODELS, transformResponse = bridgeTraeSoloStream, serviceName = 'Trae', requestClient }) {
+export async function createAdapter({ client, key, port = 18788, supportedModels = undefined, transformResponse = bridgeTraeSoloStream, serviceName = 'Trae', requestClient }) {
   if (!key || key.length < 32) throw new Error('A local API key of at least 32 characters is required');
   const directory = await client.fetchModels(AbortSignal.timeout(45000));
-  const models = directory.filter(m => supportedModels === null || supportedModels.includes(m.id));
+  const models = directory.filter(m => supportedModels === null || (supportedModels === undefined ? isTraeChatModel(m.id) : supportedModels.includes(m.id)));
   if (!models.length) throw new Error(`No supported models in the live ${serviceName} directory`);
   const server = http.createServer(async (req, res) => {
     const abort = new AbortController();

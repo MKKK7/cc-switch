@@ -1,9 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAdapter, readProductVersion } from './server.mjs';
+import { createAdapter, readProductVersion, isTraeChatModel } from './server.mjs';
 import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+
+test('catalog includes new models but excludes internal slots', () => {
+  for (const id of ['gpt-6.1-terra', 'deepseek-v4.1-flash', 'gpt-5.2-codex-paygo']) assert.equal(isTraeChatModel(id), true);
+  for (const id of ['search_agent', 'search_agent_gpt-5.4', 'custom_model_gpt-6', 'title_generation', 'fast_apply']) assert.equal(isTraeChatModel(id), false);
+});
 
 test('accepts installation directory and legacy product file', async t => {
   const root = await mkdtemp(path.join(tmpdir(), 'trae-product-'));

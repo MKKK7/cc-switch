@@ -18,7 +18,8 @@ client.chatStream = async (...args) => {
   }
   return result;
 };
-const adapter = await createAdapter({ client, key, port: 0 });
+// This smoke test has identity assertions for these two models only.
+const adapter = await createAdapter({ client, key, port: 0, supportedModels: ['gpt-6.1-sol', 'kimi-k3'] });
 const call = async body => {
   const response = await fetch(`http://127.0.0.1:${adapter.port}/v1/chat/completions`, {
     method: 'POST', headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' }, body: JSON.stringify(body),
