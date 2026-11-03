@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { open } from "@tauri-apps/plugin-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -68,14 +69,20 @@ export function LocalAdapterAuth({
           </label>
           {kind === "trae" && (
             <label className="block text-sm">
-              Trae product.json（标准安装可留空）
+              Trae 安装根目录（标准安装可留空）
               <Input
-                placeholder="D:\Tools\Trae\resources\app\product.json"
+                placeholder="D:\Tools\Trae"
                 value={settings.productPath}
                 onChange={(e) =>
                   setSettings({ ...settings, productPath: e.target.value })
                 }
               />
+              <Button type="button" variant="outline" className="mt-2" onClick={async () => {
+                try {
+                  const selected = await open({ directory: true, multiple: false, title: "选择 Trae 安装根目录" });
+                  if (typeof selected === "string") setSettings({ ...settings, productPath: selected });
+                } catch (error) { setMessage(String(error)); }
+              }}>选择文件夹</Button>
             </label>
           )}
           <label className="block text-sm">

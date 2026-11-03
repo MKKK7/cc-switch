@@ -78,6 +78,8 @@ export async function readTraeIdentity(candidate: TraeStorageCandidate, options:
       for (const root of localRoots) {
         productPaths.push(join(root, 'Programs', appName, 'resources', 'app', 'product.json'))
       }
+      // Common custom installation location on Windows.
+      productPaths.push(join('D:', 'Tools', appName, 'resources', 'app', 'product.json'))
     }
   }
   let product: Record<string, unknown> = {}

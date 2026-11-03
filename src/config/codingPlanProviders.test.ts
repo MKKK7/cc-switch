@@ -5,6 +5,12 @@ import {
   injectCodingPlanUsageScript,
 } from "./codingPlanProviders";
 
+it("recognizes only the CommandCode local adapter endpoint", () => {
+  expect(detectCodingPlanProvider("http://127.0.0.1:18789/v1")).toBe("command_code");
+  expect(detectCodingPlanProvider("http://127.0.0.1:18788/v1")).toBeNull();
+  expect(detectCodingPlanProvider("http://127.0.0.1:187890/v1")).toBeNull();
+});
+
 // codex 预设的 config 由 generateThirdPartyConfig 生成，这里取其等效形态
 const OPENCODE_GO_CODEX_TOML = `model_provider = "custom"
 model = "glm-5.2"

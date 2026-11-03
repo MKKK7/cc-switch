@@ -7,8 +7,8 @@
 ## 在 CC Switch 中使用
 
 1. 在 Claude Code / Codex 页点击「添加供应商」，选择 **Trae 国际版（路由）**。
-2. 认证区域点击「导入 Trae 登录态并连接」。非标准安装位置在运行设置中填写
-   `resources/app/product.json`，例如 `D:\Tools\Trae\resources\app\product.json`。
+2. 认证区域点击「导入 Trae 登录态并连接」。非标准安装位置在运行设置中选择或填写
+   安装根目录，例如 `D:\Tools\Trae`；旧版的 product.json 路径仍受支持。
 3. 本地连接 key 自动写入标准 API Key 栏；按普通表单设置名称、模型和其他参数后保存。
 4. 在供应商列表使用 **路由模式**。适配器提供 Chat Completions，由 CC Switch 转换
    Anthropic / Responses 协议，不能选原生直连模式。

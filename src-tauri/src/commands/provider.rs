@@ -659,7 +659,14 @@ async fn query_provider_usage_inner(
     }
 
     // ── Coding Plan 专用路径 ──
-    if template_type == TEMPLATE_TYPE_TOKEN_PLAN {
+    // Older CommandCode entries may already have the balance template saved.
+    // Its quota endpoint is implemented by the coding-plan service, so keep
+    // those entries working without changing the user's stored settings.
+    let native_base_url = resolve_native_credentials(&app_type, provider).0;
+    let commandcode_balance = template_type == TEMPLATE_TYPE_BALANCE
+        && crate::services::coding_plan::detect_provider_id(&native_base_url)
+            == Some("command_code");
+    if template_type == TEMPLATE_TYPE_TOKEN_PLAN || commandcode_balance {
         let (base_url, api_key) =
             resolve_coding_plan_credentials(&app_type, provider, usage_script);
 

@@ -1,6 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createAdapter } from './server.mjs';
+import { createAdapter, readProductVersion } from './server.mjs';
+import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+
+test('accepts installation directory and legacy product file', async t => {
+  const root = await mkdtemp(path.join(tmpdir(), 'trae-product-'));
+  t.after(() => rm(root, { recursive: true, force: true }));
+  const app = path.join(root, 'resources', 'app');
+  await mkdir(app, { recursive: true });
+  const product = path.join(app, 'product.json');
+  await writeFile(product, JSON.stringify({ appVersion: '1.2.3' }));
+  assert.equal(await readProductVersion(root), '1.2.3');
+  assert.equal(await readProductVersion(product), '1.2.3');
+});
 
 const key = 'test-only-key-'.repeat(4);
 const event = (name, data) => `event: ${name}\ndata: ${JSON.stringify(data)}\n\n`;

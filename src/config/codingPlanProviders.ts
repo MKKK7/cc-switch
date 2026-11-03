@@ -85,7 +85,7 @@ export const CODING_PLAN_PROVIDERS: readonly CodingPlanProviderEntry[] = [
     // Claude 使用 /provider，Codex 使用 /provider/v1。
     id: "command_code",
     label: "Command Code",
-    pattern: /api\.commandcode\.ai\/provider(?:[/?#]|$)/i,
+    pattern: /^(?:https?:\/\/api\.commandcode\.ai\/provider(?:[/?#]|$)|http:\/\/127\.0\.0\.1:18789(?:[/?#]|$))/i,
   },
 ] as const;
 

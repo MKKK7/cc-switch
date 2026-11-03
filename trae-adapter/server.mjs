@@ -1,5 +1,5 @@
 import http from 'node:http';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { once } from 'node:events';
 import { pathToFileURL } from 'node:url';
@@ -12,12 +12,19 @@ import { SseDecoder } from './vendor/sse.ts';
 
 export const SUPPORTED_MODELS = ['gpt-6.1-sol', 'kimi-k3'];
 
+export async function readProductVersion(location) {
+  const info = await stat(location);
+  const file = info.isDirectory() ? path.join(location, 'resources', 'app', 'product.json') : location;
+  const product = JSON.parse(await readFile(file, 'utf8'));
+  if (typeof product.appVersion !== 'string' || !product.appVersion.trim()) throw new Error('Invalid Trae product version');
+  return product.appVersion;
+}
+
 export async function desktopClient() {
   const storage = process.env.TRAE_STORAGE_PATH ?? path.join(process.env.APPDATA ?? '', 'Trae/User/globalStorage/storage.json');
   const identity = await readTraeIdentity({ path: storage, edition: 'sg', source: 'desktop' });
   if (process.env.TRAE_PRODUCT_PATH) {
-    const product = JSON.parse(await readFile(process.env.TRAE_PRODUCT_PATH, 'utf8'));
-    identity.appVersion = product.appVersion ?? identity.appVersion;
+    identity.appVersion = await readProductVersion(process.env.TRAE_PRODUCT_PATH);
   }
   if (!identity.appVersion) throw new Error('Cannot find Trae version. Set TRAE_PRODUCT_PATH to resources/app/product.json.');
   return new TraeSoloUpstreamClient({
@@ -132,8 +139,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       process.stdin.resume();
       process.stdin.on('end', () => { adapter.server.closeAllConnections(); adapter.server.close(); });
     }
-  } catch {
-    console.error('Trae adapter failed to start. Check Node >=24, Trae login/version path, proxy and port.');
+  } catch (error) {
+    const message = error?.code === 'EADDRINUSE' ? 'Port 18788 is already in use.'
+      : error?.message?.startsWith('Cannot find Trae version.') ? 'Cannot find Trae version. Set the Trae product.json path in adapter settings.'
+      : 'Check Trae login, installation directory, proxy and port.';
+    console.error(`Trae adapter failed to start: ${message}`);
     process.exitCode = 1;
   }
 }
